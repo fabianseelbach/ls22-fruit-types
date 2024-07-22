@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+from curses import window
 from datetime import datetime
 from pprint import pprint
 import xml.etree.ElementTree as ET
@@ -44,13 +45,20 @@ def get_fruittypes(filepath):
     for fruittype in fruittypes.findall("fruitType"):
         growth = fruittype.find("growth")
         harvest = fruittype.find("harvest")
+        windrow = fruittype.find("windrow")
         name = fruittype.attrib.get("name").lower()
         regrows = growth.attrib.get("regrows", "false")
+
+        if windrow is not None:
+            straw = windrow.attrib.get("name", "nostraw") == "straw"
+        else:
+            straw = False
+
         ret.update({
             name: {
                 "regrows": regrows == "true",
                 "liter": float(harvest.attrib.get("literPerSqm", 0)),
-                "straw": (harvest.attrib.get("chopperTypeName", "Nope") == "CHOPPER_STRAW")
+                "straw": straw
             }
         })
 
@@ -72,7 +80,7 @@ def get_filltypes(filepath, fruittypes, difficulty_factor):
                 "Name": name.replace("_", " ").capitalize(),
                 "Wächst nach": ("Ja" if fruittypes.get(name, {}).get("regrows", False) == True else "Nein"),
                 "Stroh": ("Ja" if fruittypes.get(name, {}).get("straw", False) == True else "Nein"),
-                "Liter per Sqm": fruittypes.get(name, {}).get("liter", 0.0)
+                "Liter per Sqm": str(fruittypes.get(name, {}).get("liter", 0.0)).replace(".", ",")
             }
             factors = economy.find("factors")
             if factors is None:
