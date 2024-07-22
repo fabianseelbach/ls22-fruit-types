@@ -46,7 +46,13 @@ def get_fruittypes(filepath):
         harvest = fruittype.find("harvest")
         name = fruittype.attrib.get("name").lower()
         regrows = growth.attrib.get("regrows", "false")
-        ret.update({name: {"regrows": regrows == "true", "liter": float(harvest.attrib.get("literPerSqm", 0))}})
+        ret.update({
+            name: {
+                "regrows": regrows == "true",
+                "liter": float(harvest.attrib.get("literPerSqm", 0)),
+                "straw": (harvest.attrib.get("chopperTypeName", "Nope") == "CHOPPER_STRAW")
+            }
+        })
 
     return ret
 
@@ -65,6 +71,7 @@ def get_filltypes(filepath, fruittypes, difficulty_factor):
             row = {
                 "Name": name.replace("_", " ").capitalize(),
                 "Wächst nach": ("Ja" if fruittypes.get(name, {}).get("regrows", False) == True else "Nein"),
+                "Stroh": ("Ja" if fruittypes.get(name, {}).get("straw", False) == True else "Nein"),
                 "Liter per Sqm": fruittypes.get(name, {}).get("liter", 0.0)
             }
             factors = economy.find("factors")
