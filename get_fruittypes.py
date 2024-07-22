@@ -43,9 +43,10 @@ def get_fruittypes(filepath):
 
     for fruittype in fruittypes.findall("fruitType"):
         growth = fruittype.find("growth")
+        harvest = fruittype.find("harvest")
         name = fruittype.attrib.get("name").lower()
         regrows = growth.attrib.get("regrows", "false")
-        ret.update({name: regrows == "true"})
+        ret.update({name: {"regrows": regrows == "true", "liter": float(harvest.attrib.get("literPerSqm", 0))}})
 
     return ret
 
@@ -63,7 +64,8 @@ def get_filltypes(filepath, fruittypes, difficulty_factor):
             price_per_liter = float(economy.attrib.get("pricePerLiter"))
             row = {
                 "Name": name.replace("_", " ").capitalize(),
-                "Wächst nach": ("Ja" if fruittypes.get(name, False) == True else "Nein")
+                "Wächst nach": ("Ja" if fruittypes.get(name, {}).get("regrows", False) == True else "Nein"),
+                "Liter per Sqm": fruittypes.get(name, {}).get("liter", 0.0)
             }
             factors = economy.find("factors")
             if factors is None:
@@ -85,7 +87,7 @@ def get_filltypes(filepath, fruittypes, difficulty_factor):
                         best_value = price
                     row.update({month: price})
 
-            row.update({"Bester Monat": f"{best_month} ({best_value})"})
+            row.update({"Bester Monat": best_month, "Bester Preis": best_value})
             ret.append(row)
     return ret
 
