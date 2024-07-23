@@ -11,8 +11,11 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "--fruit-types=./maps_fruitTypes.xml",
-                "--fill-types=./maps_fillTypes.xml"
+                // "xml",
+                // "--fruit-types=./maps_fruitTypes.xml",
+                // "--fill-types=./maps_fillTypes.xml"
+                "zip",
+                "--zip-file=./FS22_NF_Marsch_4fach.zip"
             ]
         }
     ]
