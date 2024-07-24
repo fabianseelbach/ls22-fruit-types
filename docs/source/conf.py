@@ -5,9 +5,6 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import sys
-import os
-sys.path.insert(0, os.path.abspath('../../'))
 
 project = 'LS22 Best Fruit Types Calculator'
 copyright = '2024, Fabian Seelbach'
@@ -20,7 +17,10 @@ release = '0.0.1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx.ext.autodoc",
+    'sphinx.ext.viewcode',
+    'sphinx.ext.todo',
+    'sphinx_toolbox.more_autodoc',
+    'sphinx.ext.autodoc'
 ]
 
 templates_path = ['_templates']
@@ -31,5 +31,5 @@ language = 'de'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
