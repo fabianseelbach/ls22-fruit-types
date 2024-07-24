@@ -15,7 +15,8 @@
                 // "--fruit-types=./maps_fruitTypes.xml",
                 // "--fill-types=./maps_fillTypes.xml"
                 "zip",
-                "--zip-file=./FS22_NF_Marsch_4fach.zip"
+                "--zip-file=./FS22_NF_Marsch_4fach.zip",
+                "--lang=de"
             ]
         }
     ]
