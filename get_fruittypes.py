@@ -1,5 +1,5 @@
 #! /bin/env python3
-
+"""With this Script it is possible to get the Price of each fruit per Square Hektar"""
 import argparse
 import csv
 from datetime import datetime
@@ -15,11 +15,13 @@ from operator import itemgetter
 from deep_translator import GoogleTranslator
 
 class LS22Calculator():
+    """Calculator"""
     temp = tempfile.mkdtemp()
     data = []
 
     DIFFICULTIES = {
         "normal": 1.8
+        # TODO: Add the other Difficulties
     }
 
     TRANSLATION = {}
@@ -34,12 +36,32 @@ class LS22Calculator():
 
 
     def calc_price(self, per_liter, period_factor):
+        """Calculate the Price per 1000 Liter
+
+        :param per_liter: Price per Liter
+        :type per_liter: int
+        :param period_factor: Factor for the Month
+        :type period_factor: float
+        :return: The Price of 1000 Liter
+        :rtype: int
+        """
         return ceil(per_liter * 1000 * self.difficulty_factor * period_factor)
     
     def make_float_excel_friendly(self, value):
+        """Excel is not happy about . as Seperator so we will replace:
+        . -> ,
+        100.00 -> 100,00
+
+        :param value: Value to be converted
+        :type value: float
+        :return: Value can be read by Excel
+        :rtype: str
+        """
         return str(value).replace(".", ",")
 
     def translate_table_generate(self):
+        """Use Translation XML to generate an Initial Translation table
+        """
         if not os.path.exists(self.translation_fp):
             self.translation_fp = None
 
@@ -59,10 +81,21 @@ class LS22Calculator():
                 })
 
     def translate(self, key, text):
+        """Translate Text to given Language
+        It will use the Google Translator if it is initialized
+
+        :param key: Key in Translation Table
+        :type key: str
+        :param text: Text to be translated
+        :type text: str
+        :return: Translated Text
+        :rtype: str
+        """
         if key in self.TRANSLATION:
             ret = self.TRANSLATION.get(key)
         elif self.translator is not None:
             ret = self.translator.translate(text=text)
+            self.TRANSLATION[key] = ret
         else:
             ret = text
 
@@ -70,6 +103,13 @@ class LS22Calculator():
 
 
     def get_fruittypes(self, filepath):
+        """Get Types of Fruit from XML File
+
+        :param filepath: Filepath of XML
+        :type filepath: str
+        :return: Fruittypes
+        :rtype: dict
+        """
         xml = ET.parse(filepath)
         fruittypes = xml.find("fruitTypes")
 
@@ -98,6 +138,15 @@ class LS22Calculator():
         return ret
 
     def get_filltypes(self, filepath, fruittypes):
+        """Get Fill-Types from XML File and Calculate everything
+
+        :param filepath: Path to XML
+        :type filepath: str
+        :param fruittypes: Fruittypes from `get_fruittypes`
+        :type fruittypes: dict
+        :return: List of Fruits with their characteristics
+        :rtype: list
+        """
         xml = ET.parse(filepath)
 
         filltypes = xml.find("fillTypes")
@@ -151,6 +200,14 @@ class LS22Calculator():
         return ret
 
     def get_zip_data(self, zip):
+        """Use a Map-Mod ZIP-File.
+        It will be extracted.
+
+        :param zip: Path of the ZIP-File
+        :type zip: str
+        :return: Result of `get_data`
+        :rtype: list
+        """
         print("Extracting ZIP")
         with zipfile.ZipFile(zip, "r") as zip_ref:
             zip_ref.extractall(self.temp)
@@ -162,6 +219,17 @@ class LS22Calculator():
         return self.get_data()
 
     def get_xml_data(self, fruit_fp, fill_fp, translation_fp=None):
+        """Setup Everything for Single XML File usage
+
+        :param fruit_fp: Path of Fruit-Types XML
+        :type fruit_fp: str
+        :param fill_fp: Path of Fill-Types XML
+        :type fill_fp: str
+        :param translation_fp: Path of Translation XML, defaults to None
+        :type translation_fp: str, optional
+        :return: Result of `get_data`
+        :rtype: list
+        """
         self.fruit_fp = fruit_fp
         self.fill_fp = fill_fp
         self.translation_fp = translation_fp
@@ -169,6 +237,8 @@ class LS22Calculator():
         return self.get_data()
 
     def get_data(self):
+        """Get Data For further Usage
+        """
         print("Loading Translations")
         self.translate_table_generate()
 
@@ -179,6 +249,11 @@ class LS22Calculator():
         self.data = self.get_filltypes(self.fill_fp, fruittypes)
     
     def export_graph(self, output):
+        """Create a Bar-Chart with the Fruits
+
+        :param output: Output-Path (of the csv, will be replaced by png)
+        :type output: str
+        """
         name = [i["Name"] for i in sorted(self.data, key=itemgetter("Ertrag pro ha"), reverse=True) if i["Liter per Sqm"] > 0]
         price = [i["Ertrag pro ha"] for i in sorted(self.data, key=itemgetter("Ertrag pro ha"), reverse=True) if i["Liter per Sqm"] > 0]
         # Figure Size
@@ -226,6 +301,11 @@ class LS22Calculator():
         plt.savefig(output)
 
     def export_csv(self, output):
+        """Export CSV File
+
+        :param output: Path of the CSV File
+        :type output: str
+        """
         print("Exporting CSV")
         rows = []
         for d in self.data:
@@ -242,11 +322,14 @@ class LS22Calculator():
             writer.writerows(rows)
 
     def __del__(self):
+        """Remove Temporary Directory if it exists"""
         if os.path.exists(self.temp):
             shutil.rmtree(self.temp)
 
 def main():
-    args = parse_cmd_args()
+    """Main Entry Point"""
+    parser = cmd_args()
+    args = parser.parse_args()
 
     calculator = LS22Calculator(args.difficulty, args.lang)
 
@@ -258,7 +341,8 @@ def main():
     calculator.export_graph(args.output.replace("csv", "png"))
     calculator.export_csv(args.output)
 
-def parse_cmd_args():
+def cmd_args():
+    """Parse CMD-Line Arguments"""
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers()
 
@@ -281,7 +365,7 @@ def parse_cmd_args():
     xml.set_defaults(run_type="xml")
     
     
-    return parser.parse_args()
+    return parser
 
 if __name__ == "__main__":
     main()

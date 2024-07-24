@@ -6,10 +6,22 @@
 LS22 Best Fruit Types Calculator documentation
 ==============================================
 
+Usage
+-----
+
+.. argparse::
+   :ref: get_fruittypes.cmd_args
+   :prog: get_fruittypes
+
+
+Code
+----
 .. automodule:: get_fruittypes
    :members:
    :special-members:
    :undoc-members:
+
+
 
 .. toctree::
    :maxdepth: 2
