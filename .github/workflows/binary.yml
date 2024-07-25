@@ -1,7 +1,8 @@
 name: Binary Build
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - production
 
 jobs:
   build:
@@ -40,16 +41,12 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - name: Upload the artifact for Linux
-        uses: skx/github-action-publish-binaries@release-1.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          args: '*.bin'
-
-      - name: Upload the artifact for Windows
-        uses: skx/github-action-publish-binaries@release-1.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: '*.exe'
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            build/*.exe
+            build/*.bin
