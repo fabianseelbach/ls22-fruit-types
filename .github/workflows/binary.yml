@@ -62,7 +62,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Retrieve saved Docker image
+      - name: Retrieve saved binaries
         uses: actions/download-artifact@v3
         with:
           path: "build"
@@ -83,4 +83,4 @@ jobs:
         with:
           files: "build/*"
           release-tag: latest
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
