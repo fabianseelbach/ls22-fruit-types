@@ -1,0 +1,38 @@
+name: Update latest Release
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build:
+    name: Update binary
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repo at the commit which triggered this job
+      - name: Set up git repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # used to get the tag of the latest release
+
+      # Removes the latest release, so that we can create a new one in its place
+      - name: Delete latest release
+        uses: ame-yu/action-delete-latest-release@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # (optional) Removes the tag associated with the latest release
+      - name: Delete latest tag
+        run: |
+          git tag -d latest
+          git push origin :latest
+        continue-on-error: true # in case there's no existing release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
