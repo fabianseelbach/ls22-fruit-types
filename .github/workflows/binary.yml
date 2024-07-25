@@ -79,8 +79,12 @@ jobs:
           title: "Development Build"
 
       - name: Upload binaries to release
-        uses: AButler/upload-release-assets@v3.0
+        uses: ncipollo/release-action@v1
         with:
-          files: "build/get_fruittypes.bin;build/get_fruittypes.exe"
-          release-tag: latest
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "build/get_fruittypes.bin,build/get_fruittypes.exe"
+          allowUpdates: true
+          name: Latest Release
+          prerelease: true
+          replacesArtifacts: true
+          removeArtifacts: true
+
