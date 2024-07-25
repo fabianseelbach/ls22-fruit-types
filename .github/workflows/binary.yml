@@ -36,12 +36,31 @@ jobs:
           script-name: get_fruittypes.py
           onefile: true
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: ${{ runner.os }} Build
+          path: |
+            build/*.exe
+            build/*.bin
+            build/*.app/**/*
+
   upload_artifacts:
     name: Upload Artifacts
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Retrieve saved Docker image
+        uses: actions/download-artifact@v2
+        with:
+          path: build/
+
+      - name: Create Release
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
