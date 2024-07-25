@@ -80,7 +80,7 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/get_fruittypes.bin,build/get_fruittypes.exe"
+          artifacts: "build/get_fruittypes.bin/get_fruittypes.bin,build/get_fruittypes.exe/get_fruittypes.exe"
           allowUpdates: true
           name: Latest Release
           prerelease: true
