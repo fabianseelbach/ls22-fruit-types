@@ -64,6 +64,11 @@ jobs:
 
       - name: Retrieve saved Docker image
         uses: actions/download-artifact@v3
+        with:
+          path: "build"
+
+      - name: Display structure of downloaded files
+        run: ls -R build
 
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -72,6 +77,4 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: true
           title: "Development Build"
-          files: |
-            *.exe
-            *.bin
+          files: build/*
