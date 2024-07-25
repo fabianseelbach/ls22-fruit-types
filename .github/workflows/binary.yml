@@ -36,15 +36,23 @@ jobs:
           script-name: get_fruittypes.py
           onefile: true
 
-      - name: Upload Artifacts
+      - name: Upload Artifact Linux
+        if: runner.os == 'Linux'
         uses: actions/upload-artifact@v3
         with:
           retention-days: 1
-          name: ${{ runner.os }} Build
+          name: get_fruittypes.bin
+          path: |
+            build/*.bin
+
+      - name: Upload Artifact Windows
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: get_fruittypes.exe
           path: |
             build/*.exe
-            build/*.bin
-            build/*.app/**/*
 
   upload_artifacts:
     name: Upload Artifacts
