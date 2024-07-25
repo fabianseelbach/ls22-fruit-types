@@ -77,4 +77,4 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: true
           title: "Development Build"
-          files: "/home/runner/work/ls22-fruit-types/ls22-fruit-types/build/*"
+          files: build/*
