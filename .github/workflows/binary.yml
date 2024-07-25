@@ -67,5 +67,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            build/*.exe
-            build/*.bin
+            build/*
