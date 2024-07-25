@@ -83,3 +83,4 @@ jobs:
         with:
           files: "build/*"
           release-tag: latest
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
