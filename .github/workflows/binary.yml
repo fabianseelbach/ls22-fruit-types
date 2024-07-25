@@ -70,15 +70,14 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R build
 
-      - name: Create Release
-        uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Create/Update latest Tag
+        uses: richardsimko/update-tag@v1
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
+          tag_name: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload binaries to release
+      - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/get_fruittypes.bin,build/get_fruittypes.exe"
@@ -87,4 +86,5 @@ jobs:
           prerelease: true
           replacesArtifacts: true
           removeArtifacts: true
+          tag: latest
 
